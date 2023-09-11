@@ -119,13 +119,72 @@ const HomeScreen = () => {
           <Text style={styles.temperature}>23</Text>
           <Text style={styles.temperatureDescription}>Partly Cloudy</Text>
         </View>
-        <View>
+        <View style={styles.dailyForecastContainer}>
           <View style={styles.dailyForecastTitleContainer}>
             <CalendarDaysIcon size={30} color="white" />
             <Text style={styles.dailyForecastTitle}>Daily Forecast</Text>
           </View>
-          <ScrollView>
-            
+          <ScrollView
+            style={styles.dailyForecast}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          >
+            <View style={styles.dailyForecastWeatherIconContainer}>
+              <Image
+                style={styles.dailyForecastWeatherIcons}
+                source={require("../assets/heavyrain.png")}
+              />
+              <Text style={styles.dailyForecastDay}>Monday</Text>
+              <Text style={styles.dailyForecastTemp}>13</Text>
+            </View>
+            <View style={styles.dailyForecastWeatherIconContainer}>
+              <Image
+                style={styles.dailyForecastWeatherIcons}
+                source={require("../assets/heavyrain.png")}
+              />
+              <Text style={styles.dailyForecastDay}>Monday</Text>
+              <Text style={styles.dailyForecastTemp}>13</Text>
+            </View>
+            <View style={styles.dailyForecastWeatherIconContainer}>
+              <Image
+                style={styles.dailyForecastWeatherIcons}
+                source={require("../assets/heavyrain.png")}
+              />
+              <Text style={styles.dailyForecastDay}>Monday</Text>
+              <Text style={styles.dailyForecastTemp}>13</Text>
+            </View>
+            <View style={styles.dailyForecastWeatherIconContainer}>
+              <Image
+                style={styles.dailyForecastWeatherIcons}
+                source={require("../assets/heavyrain.png")}
+              />
+              <Text style={styles.dailyForecastDay}>Monday</Text>
+              <Text style={styles.dailyForecastTemp}>13</Text>
+            </View>
+            <View style={styles.dailyForecastWeatherIconContainer}>
+              <Image
+                style={styles.dailyForecastWeatherIcons}
+                source={require("../assets/heavyrain.png")}
+              />
+              <Text style={styles.dailyForecastDay}>Monday</Text>
+              <Text style={styles.dailyForecastTemp}>13</Text>
+            </View>
+            <View style={styles.dailyForecastWeatherIconContainer}>
+              <Image
+                style={styles.dailyForecastWeatherIcons}
+                source={require("../assets/heavyrain.png")}
+              />
+              <Text style={styles.dailyForecastDay}>Monday</Text>
+              <Text style={styles.dailyForecastTemp}>13</Text>
+            </View>
+            <View style={styles.dailyForecastWeatherIconContainer}>
+              <Image
+                style={styles.dailyForecastWeatherIcons}
+                source={require("../assets/heavyrain.png")}
+              />
+              <Text style={styles.dailyForecastDay}>Monday</Text>
+              <Text style={styles.dailyForecastTemp}>13</Text>
+            </View>
           </ScrollView>
         </View>
       </ImageBackground>
@@ -228,6 +287,9 @@ const styles = StyleSheet.create({
     color: "white",
     marginTop: 10,
   },
+  dailyForecastContainer: {
+    marginTop: 20,
+  },
   dailyForecastTitleContainer: {
     display: "flex",
     flexDirection: "row",
@@ -239,6 +301,37 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     color: "white",
     fontSize: "17",
+  },
+  dailyForecast: {
+    marginTop: 20,
+    marginLeft: 20,
+  },
+  dailyForecastWeatherIconContainer: {
+    backgroundColor: theme.bgWhite(0.3),
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+  dailyForecastWeatherIcons: {
+    width: 70,
+    height: 70,
+  },
+  dailyForecastDay: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "medium",
+    paddingTop: 6,
+    textAlign: "center",
+  },
+  dailyForecastTemp: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+    paddingTop: 6,
+    paddingBottom: 6,
+    textAlign: "center",
   },
 });
 
