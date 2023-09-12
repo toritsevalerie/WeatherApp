@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   View,
   SafeAreaView,
@@ -18,6 +18,10 @@ import {
   MapPinIcon,
   CalendarDaysIcon,
 } from "react-native-heroicons/outline";
+import { fetchLocations, fetchWeatherForecast } from "../api/weather";
+import { debounce } from "lodash";
+import { weatherImages } from "../constants";
+import * as Progress from "react-native-progress";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -26,12 +30,50 @@ const HomeScreen = () => {
   const [showSearch, setShowSearch] = useState(false);
 
   // intitialize a state for location search
+  const [locations, setLocations] = useState([]);
 
-  const [location, setLocation] = useState([1, 2, 3]);
+  //intializing state to store weather
+  const [weather, setWeather] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  const handleLocationClick = () => {
-    console.log("heeeeeey");
+  const handleLocation = (loc) => {
+    console.log("location: ", loc);
+    setLocations([]);
+    setShowSearch(false);
+    fetchWeatherForecast({
+      cityName: loc.name,
+      days: "7",
+    }).then((data) => {
+      setWeather(data);
+      console.log("got forecast: ", data);
+    });
   };
+  const handleSearch = (value) => {
+    console.log("value:", value);
+    if (value.length > 2) {
+      fetchLocations({ cityName: value }).then((data) => {
+        console.log("got locations: ", data);
+        setLocations(data);
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchMyWeatherData();
+  }, []);
+
+  const fetchMyWeatherData = async () => {
+    fetchWeatherForecast({
+      cityName: "Toronto",
+      days: "7",
+    }).then((data) => {
+      setWeather(data);
+    });
+  };
+
+  const handleTextDebounce = useCallback(debounce(handleSearch, 1200), []);
+
+  const { current, location } = weather;
 
   return (
     <View style={styles.homeScreenContainer}>
@@ -41,7 +83,12 @@ const HomeScreen = () => {
         source={require("../assets/weatherAppBackgroundImage.png")}
         style={styles.backgroundImage}
       >
-        {/* search section */}
+        {/* {loading ? (
+          <View>
+            <Text>Loading..</Text>
+          </View>
+        ) : ( {hi}
+        )} */}
         <SafeAreaView style={styles.search}>
           <View style={styles.searchContainer}>
             <View
@@ -56,6 +103,7 @@ const HomeScreen = () => {
             >
               {showSearch ? (
                 <TextInput
+                  onChangeText={handleTextDebounce}
                   placeholder="  Search City"
                   placeholderTextColor={"lightgray"}
                   style={styles.searchPlaceholderText}
@@ -73,26 +121,26 @@ const HomeScreen = () => {
             </View>
           </View>
         </SafeAreaView>
-        {location.length > 0 && showSearch ? (
+        {locations.length > 0 && showSearch ? (
           <View style={styles.citySearchResults}>
-            {location.map((loc, index) => {
+            {locations.map((loc, index) => {
               // conditional to not show bottom border at the end of the list/array
               return (
                 <TouchableOpacity
                   onPress={() => {
-                    handleLocationClick;
+                    handleLocation(loc);
                   }}
                   key={index}
                   style={[
                     styles.cityOptions,
-                    index + 1 !== location.length
+                    index + 1 !== locations.length
                       ? { borderBottomWidth: 1, borderBottomColor: "black" }
                       : {},
                   ]}
                 >
                   <MapPinIcon size={20} />
                   <Text style={styles.cityOptionsText}>
-                    London, United Kingdom
+                    {loc?.name}, {loc?.country}
                   </Text>
                 </TouchableOpacity>
               );
@@ -104,20 +152,22 @@ const HomeScreen = () => {
         {/* city name */}
         <View>
           <Text style={styles.citynameDisplay}>
-            London,
-            <Text style={styles.citynameDisplayTwo}> United Kingdom</Text>
+            {location?.name},
+            <Text style={styles.citynameDisplayTwo}> {location?.country}</Text>
           </Text>
         </View>
         {/* image */}
         <View style={styles.weatherImageContainer}>
           <Image
-            source={require("../assets/partlycloudy.png")}
+            source={weatherImages[current?.condition?.text]}
             style={styles.weatherImageIcon}
           />
         </View>
         <View>
-          <Text style={styles.temperature}>23</Text>
-          <Text style={styles.temperatureDescription}>Partly Cloudy</Text>
+          <Text style={styles.temperature}>{current?.temp_c}°</Text>
+          <Text style={styles.temperatureDescription}>
+            {current?.condition?.text}
+          </Text>
         </View>
         <View style={styles.dailyForecastContainer}>
           <View style={styles.dailyForecastTitleContainer}>
@@ -129,62 +179,28 @@ const HomeScreen = () => {
             horizontal
             showsHorizontalScrollIndicator={false}
           >
-            <View style={styles.dailyForecastWeatherIconContainer}>
-              <Image
-                style={styles.dailyForecastWeatherIcons}
-                source={require("../assets/heavyrain.png")}
-              />
-              <Text style={styles.dailyForecastDay}>Monday</Text>
-              <Text style={styles.dailyForecastTemp}>13</Text>
-            </View>
-            <View style={styles.dailyForecastWeatherIconContainer}>
-              <Image
-                style={styles.dailyForecastWeatherIcons}
-                source={require("../assets/heavyrain.png")}
-              />
-              <Text style={styles.dailyForecastDay}>Monday</Text>
-              <Text style={styles.dailyForecastTemp}>13</Text>
-            </View>
-            <View style={styles.dailyForecastWeatherIconContainer}>
-              <Image
-                style={styles.dailyForecastWeatherIcons}
-                source={require("../assets/heavyrain.png")}
-              />
-              <Text style={styles.dailyForecastDay}>Monday</Text>
-              <Text style={styles.dailyForecastTemp}>13</Text>
-            </View>
-            <View style={styles.dailyForecastWeatherIconContainer}>
-              <Image
-                style={styles.dailyForecastWeatherIcons}
-                source={require("../assets/heavyrain.png")}
-              />
-              <Text style={styles.dailyForecastDay}>Monday</Text>
-              <Text style={styles.dailyForecastTemp}>13</Text>
-            </View>
-            <View style={styles.dailyForecastWeatherIconContainer}>
-              <Image
-                style={styles.dailyForecastWeatherIcons}
-                source={require("../assets/heavyrain.png")}
-              />
-              <Text style={styles.dailyForecastDay}>Monday</Text>
-              <Text style={styles.dailyForecastTemp}>13</Text>
-            </View>
-            <View style={styles.dailyForecastWeatherIconContainer}>
-              <Image
-                style={styles.dailyForecastWeatherIcons}
-                source={require("../assets/heavyrain.png")}
-              />
-              <Text style={styles.dailyForecastDay}>Monday</Text>
-              <Text style={styles.dailyForecastTemp}>13</Text>
-            </View>
-            <View style={styles.dailyForecastWeatherIconContainer}>
-              <Image
-                style={styles.dailyForecastWeatherIcons}
-                source={require("../assets/heavyrain.png")}
-              />
-              <Text style={styles.dailyForecastDay}>Monday</Text>
-              <Text style={styles.dailyForecastTemp}>13</Text>
-            </View>
+            {weather?.forecast?.forecastday?.map((item, index) => {
+              console.log(weather.forecast.forecastday);
+              let date = new Date(item.date);
+              let options = { weekday: "long" };
+              let dayName = date.toLocaleDateString("en-US", options);
+              dayName = dayName.split(",")[0];
+              return (
+                <View
+                  key={index}
+                  style={styles.dailyForecastWeatherIconContainer}
+                >
+                  <Image
+                    style={styles.dailyForecastWeatherIcons}
+                    source={weatherImages[item?.day?.condition?.text]}
+                  />
+                  <Text style={styles.dailyForecastDay}>{dayName}</Text>
+                  <Text style={styles.dailyForecastTemp}>
+                    {item?.day?.avgtemp_c}°
+                  </Text>
+                </View>
+              );
+            })}
           </ScrollView>
         </View>
       </ImageBackground>
@@ -276,14 +292,15 @@ const styles = StyleSheet.create({
   },
   temperature: {
     textAlign: "center",
-    fontSize: 60,
+    fontSize: 50,
     fontWeight: "bold",
     color: "white",
     marginTop: 10,
   },
   temperatureDescription: {
     textAlign: "center",
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: "medium",
     color: "white",
     marginTop: 10,
   },
